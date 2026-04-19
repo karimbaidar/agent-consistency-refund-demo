@@ -1,0 +1,5 @@
+Workflow result: FAILED
+Run id: demo-stale-policy
+Provider: heuristic
+Receipts: 2
+Failure: StaleStateError: state 'refund_policy' is stale: read version policy-v12, current version policy-v14

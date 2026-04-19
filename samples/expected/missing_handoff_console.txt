@@ -1,0 +1,7 @@
+Workflow result: FAILED
+Run id: demo-missing-handoff
+Provider: heuristic
+Receipts: 1
+Report: runs/demo-missing-handoff/summary.json
+Receipt log: runs/demo-missing-handoff/receipts.jsonl
+Failure: HandoffValidationError: required fact 'order.previous_refund_count' is missing

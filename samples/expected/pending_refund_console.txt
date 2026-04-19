@@ -1,0 +1,7 @@
+Workflow result: FAILED
+Run id: demo-pending-refund
+Provider: heuristic
+Receipts: 4
+Report: runs/demo-pending-refund/summary.json
+Receipt log: runs/demo-pending-refund/receipts.jsonl
+Failure: OutcomeVerificationError: outcome 'refund_settled' failed: refund status is pending, not settled

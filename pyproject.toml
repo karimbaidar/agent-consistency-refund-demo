@@ -1,0 +1,22 @@
+<<<<<<< HEAD
+=======
+[project]
+authors = [
+  { name = "Karim Baidar - karimbaidar@yahoo.com" }
+]
+
+>>>>>>> 8a3899e (Initial agent-consistency refund demo)
+[tool.pytest.ini_options]
+addopts = "-ra"
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+
+[tool.ruff.lint]
+<<<<<<< HEAD
+select = ["E", "F", "I", "B"]
+=======
+select = ["E", "F", "I", "B"]
+>>>>>>> 8a3899e (Initial agent-consistency refund demo)

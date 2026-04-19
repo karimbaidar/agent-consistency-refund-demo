@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Environments
+.venv/
+venv/
+env/
+
+# Local configuration
+.env
+.env.*
+!.env.example
+
+# Runtime output
+runs/*
+!runs/.gitkeep
+*.log
+
+# Packaging/editor noise
+build/
+dist/
+*.egg-info/
+.DS_Store
+.idea/
+.vscode/

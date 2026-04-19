@@ -1,0 +1,40 @@
+{
+  "run_id": "demo-missing-handoff",
+  "scenario": "missing_handoff",
+  "request": {
+    "ticket_id": "ticket-1003",
+    "order_id": "ord-1003",
+    "requested_amount": 42.5,
+    "customer_message": "The item arrived damaged. Please refund my order.",
+    "submitted_at": "2026-04-19T10:30:00Z"
+  },
+  "order": {
+    "id": "ord-1003",
+    "version": "order-v7",
+    "customer_id": "cus-300",
+    "total": 42.5,
+    "currency": "USD",
+    "status": "delivered",
+    "previous_refund_count": 1
+  },
+  "policy": {
+    "version": "policy-v12",
+    "max_refund_amount": 100,
+    "max_previous_refunds": 0,
+    "allowed_reasons": ["damaged item", "wrong item", "not received"]
+  },
+  "latest_policy_version": "policy-v12",
+  "risk_profile": {
+    "version": "risk-v3",
+    "chargebacks_12m": 0,
+    "account_age_days": 620,
+    "manual_review": false
+  },
+  "latest_risk_version": "risk-v3",
+  "provider": {
+    "refund_status": "settled"
+  },
+  "demo": {
+    "omit_previous_refund_count": true
+  }
+}

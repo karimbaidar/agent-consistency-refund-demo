@@ -1,0 +1,5 @@
+Workflow result: PASSED
+Run id: demo-happy-refund
+Provider: heuristic
+Receipts: 5
+Customer message id: email_...
