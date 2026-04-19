@@ -1,3 +1,1 @@
---index-url https://pypi.org/simple/
-
 agent-consistency==0.1.1

@@ -1,11 +1,13 @@
-<<<<<<< HEAD
-=======
 [project]
+name = "agent-consistency-refund-demo"
+version = "0.1.0"
+description = "A multi-agent refund workflow demo for agent-consistency."
+requires-python = ">=3.9"
 authors = [
-  { name = "Karim Baidar - karimbaidar@yahoo.com" }
+  { name = "Karim Baidar", email = "karimbaidar@yahoo.com" }
 ]
+dependencies = []
 
->>>>>>> 8a3899e (Initial agent-consistency refund demo)
 [tool.pytest.ini_options]
 addopts = "-ra"
 testpaths = ["tests"]
@@ -15,8 +17,4 @@ line-length = 100
 target-version = "py39"
 
 [tool.ruff.lint]
-<<<<<<< HEAD
 select = ["E", "F", "I", "B"]
-=======
-select = ["E", "F", "I", "B"]
->>>>>>> 8a3899e (Initial agent-consistency refund demo)

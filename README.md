@@ -3,23 +3,16 @@
 A compact proof project showing how `agent-consistency` catches stale-state,
 broken-handoff, and false-success bugs in a real multi-agent refund workflow.
 
-This repo intentionally consumes the published package from TestPyPI:
+This repo intentionally consumes the published package from PyPI:
 
 ```bash
-python -m pip install -r requirements-testpypi.txt
+python -m pip install -r requirements.txt
 ```
 
-During validation this uses:
+For development and tests, install the dev requirements:
 
 ```bash
-python -m pip install -i https://test.pypi.org/simple/ agent-consistency
-```
-
-When the package moves to production PyPI, replace the TestPyPI requirement
-with:
-
-```bash
-python -m pip install agent-consistency
+python -m pip install -r requirements-dev.txt
 ```
 
 ## Problem Statement
@@ -121,8 +114,8 @@ python -m pip show agent-consistency
 python -m refund_demo.cli --input samples/inputs/happy_path.json
 ```
 
-`python -m pip show agent-consistency` should show a TestPyPI-installed package,
-currently `0.1.1` during this validation phase.
+`python -m pip show agent-consistency` should show the installed PyPI package,
+currently pinned to `0.1.1`.
 
 Expected console output:
 
