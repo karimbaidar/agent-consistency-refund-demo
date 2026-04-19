@@ -157,12 +157,15 @@ source .venv/bin/activate
 python -m pip install -U pip
 python -m pip install -r requirements-dev.txt
 python -m pip show agent-consistency
+python -m pip show agent-consistency-refund-demo
 
 python -m refund_demo.cli --input samples/inputs/happy_path.json
 ```
 
 `python -m pip show agent-consistency` should show the installed PyPI package,
 currently pinned to `0.1.1`.
+`python -m pip show agent-consistency-refund-demo` confirms the local demo app
+is installed in editable mode, which is also how CI imports `refund_demo`.
 
 Expected console output:
 
