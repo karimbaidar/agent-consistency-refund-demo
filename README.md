@@ -3,26 +3,24 @@
 A compact proof project showing how `agent-consistency` catches stale-state,
 broken-handoff, and false-success bugs in a real multi-agent refund workflow.
 
-This repo intentionally consumes the published package from PyPI:
+## Domain Context
 
-```bash
-python -m pip install -r requirements.txt
-```
+This demo is set in refund operations for an e-commerce or support platform.
+That domain is useful because everyone understands the business goal: a
+customer asks for a refund, the company decides whether it is allowed, money may
+move, and the customer gets a response.
 
-For development and tests, install the dev requirements:
+It is also risky enough to be real. A refund workflow touches customer trust,
+policy compliance, abuse prevention, payment side effects, and customer
+communication. A system can look green while still doing the wrong thing.
 
-```bash
-python -m pip install -r requirements-dev.txt
-```
+## The Problem
 
-## Problem Statement
+Multi-agent workflows do not only fail because an agent calls a dangerous tool.
+They often fail because each agent is working from a slightly different version
+of reality.
 
-Refund workflows are simple enough to understand and serious enough to matter.
-A support automation may read order history, check policy, assess risk, issue a
-refund, and email the customer. Each individual step can look successful while
-the workflow is still wrong.
-
-Common failures:
+In a refund workflow, that can look like this:
 
 - the policy agent approves using an old policy version
 - the intake agent omits previous refund history
@@ -31,7 +29,58 @@ Common failures:
   the refund is complete
 - debugging is hard because nobody knows which state each agent saw
 
-`agent-consistency` makes those quiet failures explicit.
+Those are quietly wrong successes. Logs may say every step ran, dashboards may
+show `200 OK`, and still the business outcome may be wrong.
+
+## What Is `agent-consistency`?
+
+`agent-consistency` is a small Python library for adding consistency receipts to
+agent workflows. It is not an agent framework, policy engine, tracing dashboard,
+or model gateway.
+
+It answers one operational question:
+
+> Did this agent act on the right state, pass the right context, and prove the
+> claimed outcome became true?
+
+The library records:
+
+- state snapshots read by each agent
+- assumptions made by each step
+- handoff packets passed between agents
+- state deltas produced by decisions and side effects
+- outcome checks that prove the business result actually happened
+
+This gives developers a lightweight way to catch stale state, incomplete
+handoffs, and false success before those errors reach production.
+
+## How This Demo Uses It
+
+This repo builds a five-agent refund workflow and wraps every important step
+with `agent-consistency`.
+
+The app uses the published PyPI package:
+
+```bash
+python -m pip install -r requirements.txt
+```
+
+For development and tests:
+
+```bash
+python -m pip install -r requirements-dev.txt
+```
+
+The demo intentionally includes one successful scenario and three broken
+scenarios:
+
+- happy path: all five agents complete and produce consistency receipts
+- `StaleStateError`: policy v12 was read but v14 is current
+- `HandoffValidationError`: previous refund count was missing
+- `OutcomeVerificationError`: refund status is pending, not settled
+
+That gives a quick proof that the library works in practice, not just in a unit
+test.
 
 ## Why Multi-Agent
 
@@ -47,21 +96,19 @@ different:
 One giant agent could do all of this, but it would hide ownership boundaries.
 This demo keeps the boundaries visible and checks the handoff between them.
 
-## Where `agent-consistency` Fits
+## What This Repo Proves
 
-The app is not protected only by policy rules. It records consistency receipts:
+After running the demo, you should be able to see:
 
-- state snapshots read by each agent
-- assumptions made by each step
-- handoff packets between agents
-- state deltas produced by decisions and side effects
-- outcome checks that prove the business result actually happened
+- where each agent step starts and ends
+- what state version each agent read
+- what facts were handed to the next agent
+- why a stale policy is blocked before payment execution
+- why a missing handoff field cannot silently pass downstream
+- why a payment provider response is not accepted until the refund is settled
 
-That means the demo can fail early with useful messages:
-
-- `StaleStateError`: policy v12 was read but v14 is current
-- `HandoffValidationError`: previous refund count was missing
-- `OutcomeVerificationError`: refund status is pending, not settled
+The point is not only that the workflow runs. The point is that the workflow can
+explain why it was allowed to continue, or why it stopped.
 
 ## Architecture
 
