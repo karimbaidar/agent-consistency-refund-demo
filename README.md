@@ -136,7 +136,7 @@ This demo exercises the newer consistency layer directly:
 
 ## Architecture
 
-![Agent Consistency Refund Demo Architecture](Architecture.png)
+![Agent Consistency Refund Demo Architecture](assets/Architecture.png)
 
 ## Process Flow
 
@@ -238,6 +238,19 @@ open runs/demo-happy-refund/report.html
 The report is intentionally plain HTML, so it works without a dev server,
 database, or frontend build step. That keeps the proof easy to run while still
 making the value visible.
+
+## Demo Screenshots
+
+Demo 1 shows the passing refund workflow with five receipts, verified artifacts,
+and causal links between the agent handoffs.
+
+![Demo 1 - passing refund workflow report](assets/demo1.png)
+
+Demo 2 shows the stale-policy failure. The workflow stops before refund
+execution because the policy agent read `policy-v12` while the current policy is
+`policy-v14`.
+
+![Demo 2 - stale policy failure report](assets/demo2.png)
 
 ## Validation Matrix
 

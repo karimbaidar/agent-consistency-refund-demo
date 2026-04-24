@@ -1,0 +1,155 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="980" viewBox="0 0 1600 980" role="img" aria-labelledby="title desc">
+  <title id="title">Agent Consistency Refund Demo Architecture</title>
+  <desc id="desc">Architecture diagram for the refund demo using handoff contracts, proof artifacts, verifier callbacks, outcome checks, and visual reports.</desc>
+  <defs>
+    <style>
+      .bg { fill: #f8fafc; }
+      text { font-family: Arial, Helvetica, sans-serif; }
+      .title { fill: #111827; font-size: 42px; font-weight: 700; }
+      .subtitle { fill: #667085; font-size: 20px; font-weight: 400; }
+      .section { fill: #ffffff; stroke: #d7dde8; stroke-width: 2; }
+      .agent { fill: #d9f2ef; stroke: #91c9c1; stroke-width: 2; }
+      .core { fill: #efe7ff; stroke: #b9a0e6; stroke-width: 2; }
+      .data { fill: #f3f6fb; stroke: #d7dde8; stroke-width: 2; }
+      .output { fill: #eaf2ff; stroke: #9bbcea; stroke-width: 2; }
+      .label { fill: #111827; font-size: 22px; font-weight: 700; }
+      .small { fill: #344054; font-size: 16px; font-weight: 600; }
+      .muted { fill: #667085; font-size: 15px; font-weight: 400; }
+      .tiny { fill: #667085; font-size: 13px; font-weight: 500; }
+      .arrow { stroke: #26364d; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+      .soft-arrow { stroke: #667085; stroke-width: 2.5; fill: none; marker-end: url(#arrow-soft); stroke-dasharray: 7 7; }
+      .contract { stroke: #2f6b61; stroke-width: 3; fill: none; marker-end: url(#arrow-green); }
+      .badge { fill: #ffffff; stroke: #d7dde8; stroke-width: 1.5; }
+      .badgeText { fill: #344054; font-size: 14px; font-weight: 600; }
+    </style>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M2,2 L10,6 L2,10 Z" fill="#26364d"/>
+    </marker>
+    <marker id="arrow-soft" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M2,2 L10,6 L2,10 Z" fill="#667085"/>
+    </marker>
+    <marker id="arrow-green" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M2,2 L10,6 L2,10 Z" fill="#2f6b61"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" width="1600" height="980"/>
+  <text class="title" x="80" y="74">Agent Consistency Refund Demo Architecture</text>
+  <text class="subtitle" x="80" y="108">A five-agent refund workflow with contracts, proof artifacts, verifier callbacks, causality, and visual reports.</text>
+
+  <rect class="section" x="60" y="145" rx="18" ry="18" width="1480" height="490"/>
+  <text class="label" x="95" y="188">Runtime Flow</text>
+
+  <rect class="data" x="690" y="172" rx="14" ry="14" width="220" height="58"/>
+  <text class="label" x="742" y="208">CLI runner</text>
+
+  <rect class="data" x="590" y="265" rx="14" ry="14" width="420" height="72"/>
+  <text class="label" x="676" y="294">Refund workflow</text>
+  <text class="muted" x="677" y="318">orchestrates agent steps</text>
+
+  <path class="arrow" d="M800 230 L800 262"/>
+
+  <g>
+    <rect class="agent" x="110" y="405" rx="16" ry="16" width="190" height="86"/>
+    <text class="label" x="145" y="444">Intake</text>
+    <text class="muted" x="138" y="468">extract request</text>
+  </g>
+  <g>
+    <rect class="agent" x="382" y="405" rx="16" ry="16" width="190" height="86"/>
+    <text class="label" x="420" y="444">Policy</text>
+    <text class="muted" x="413" y="468">check eligibility</text>
+  </g>
+  <g>
+    <rect class="agent" x="654" y="405" rx="16" ry="16" width="190" height="86"/>
+    <text class="label" x="696" y="444">Risk</text>
+    <text class="muted" x="690" y="468">assess abuse</text>
+  </g>
+  <g>
+    <rect class="agent" x="926" y="405" rx="16" ry="16" width="190" height="86"/>
+    <text class="label" x="964" y="444">Refund</text>
+    <text class="muted" x="958" y="468">payment side effect</text>
+  </g>
+  <g>
+    <rect class="agent" x="1198" y="405" rx="16" ry="16" width="190" height="86"/>
+    <text class="label" x="1240" y="444">Comms</text>
+    <text class="muted" x="1230" y="468">customer message</text>
+  </g>
+
+  <path class="arrow" d="M800 337 L800 370 L205 370 L205 402"/>
+  <path class="arrow" d="M800 370 L477 370 L477 402"/>
+  <path class="arrow" d="M800 370 L749 370 L749 402"/>
+  <path class="arrow" d="M800 370 L1021 370 L1021 402"/>
+  <path class="arrow" d="M800 370 L1293 370 L1293 402"/>
+
+  <path class="contract" d="M300 448 L378 448"/>
+  <path class="contract" d="M572 448 L650 448"/>
+  <path class="contract" d="M844 448 L922 448"/>
+  <path class="contract" d="M1116 448 L1194 448"/>
+
+  <rect class="badge" x="315" y="414" rx="8" ry="8" width="52" height="24"/>
+  <text class="badgeText" x="326" y="431">C1</text>
+  <rect class="badge" x="587" y="414" rx="8" ry="8" width="52" height="24"/>
+  <text class="badgeText" x="598" y="431">C2</text>
+  <rect class="badge" x="859" y="414" rx="8" ry="8" width="52" height="24"/>
+  <text class="badgeText" x="870" y="431">C3</text>
+  <rect class="badge" x="1131" y="414" rx="8" ry="8" width="52" height="24"/>
+  <text class="badgeText" x="1142" y="431">C4</text>
+
+  <rect class="core" x="160" y="535" rx="18" ry="18" width="1280" height="72"/>
+  <text class="label" x="477" y="568">agent-consistency receipts</text>
+  <text class="muted" x="458" y="592">state snapshots, handoff contracts, proof artifacts, outcome checks, and causal links</text>
+
+  <path class="soft-arrow" d="M205 491 L205 532"/>
+  <path class="soft-arrow" d="M477 491 L477 532"/>
+  <path class="soft-arrow" d="M749 491 L749 532"/>
+  <path class="soft-arrow" d="M1021 491 L1021 532"/>
+  <path class="soft-arrow" d="M1293 491 L1293 532"/>
+
+  <rect class="data" x="110" y="670" rx="14" ry="14" width="260" height="88"/>
+  <text class="label" x="160" y="704">Model provider</text>
+  <text class="muted" x="151" y="728">heuristic, Ollama,</text>
+  <text class="muted" x="155" y="750">OpenAI-compatible</text>
+
+  <rect class="data" x="670" y="670" rx="14" ry="14" width="260" height="88"/>
+  <text class="label" x="711" y="704">Verifier registry</text>
+  <text class="muted" x="710" y="728">refund intent gate</text>
+  <text class="muted" x="706" y="750">settled refund claim</text>
+
+  <rect class="data" x="990" y="670" rx="14" ry="14" width="220" height="88"/>
+  <text class="label" x="1025" y="704">Refund gateway</text>
+  <text class="muted" x="1034" y="728">simulated API</text>
+
+  <rect class="data" x="1260" y="670" rx="14" ry="14" width="220" height="88"/>
+  <text class="label" x="1302" y="704">Email gateway</text>
+  <text class="muted" x="1306" y="728">simulated API</text>
+
+  <path class="soft-arrow" d="M240 670 L240 625"/>
+  <path class="soft-arrow" d="M790 670 L790 625"/>
+  <path class="soft-arrow" d="M1100 670 L1100 625"/>
+  <path class="soft-arrow" d="M1370 670 L1370 625"/>
+
+  <path class="soft-arrow" d="M240 670 C240 620 205 560 205 492"/>
+  <path class="soft-arrow" d="M240 670 C310 620 1293 570 1293 492"/>
+  <path class="soft-arrow" d="M790 670 C820 620 1021 570 1021 492"/>
+  <path class="soft-arrow" d="M1100 670 C1080 620 1021 570 1021 492"/>
+  <path class="soft-arrow" d="M1370 670 C1360 620 1293 570 1293 492"/>
+
+  <rect class="section" x="60" y="800" rx="18" ry="18" width="1480" height="130"/>
+  <text class="label" x="95" y="844">Generated Evidence</text>
+
+  <rect class="output" x="330" y="832" rx="14" ry="14" width="250" height="58"/>
+  <text class="small" x="392" y="857">summary.json</text>
+  <text class="tiny" x="372" y="878">receipts + causality graph</text>
+
+  <rect class="output" x="675" y="832" rx="14" ry="14" width="250" height="58"/>
+  <text class="small" x="740" y="857">receipts.jsonl</text>
+  <text class="tiny" x="735" y="878">append-only receipt log</text>
+
+  <rect class="output" x="1020" y="832" rx="14" ry="14" width="250" height="58"/>
+  <text class="small" x="1090" y="857">report.html</text>
+  <text class="tiny" x="1068" y="878">visual timeline + links</text>
+
+  <path class="arrow" d="M455 607 L455 828"/>
+  <path class="arrow" d="M800 607 L800 828"/>
+  <path class="arrow" d="M1145 607 L1145 828"/>
+</svg>
