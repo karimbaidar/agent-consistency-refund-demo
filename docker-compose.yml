@@ -1,0 +1,38 @@
+services:
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama:/root/.ollama
+
+  model-pull:
+    image: ollama/ollama:latest
+    depends_on:
+      - ollama
+    environment:
+      OLLAMA_HOST: http://ollama:11434
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-qwen3:8b}
+    entrypoint: ["/bin/sh"]
+    command:
+      - "-c"
+      - "until ollama list >/dev/null 2>&1; do sleep 2; done; ollama pull \"$${OLLAMA_MODEL}\""
+
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      MODEL_PROVIDER: ${MODEL_PROVIDER:-ollama}
+      OLLAMA_BASE_URL: http://ollama:11434
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-qwen3:8b}
+      CONSISTENCY_ON_VIOLATION: raise
+      OUTPUT_DIR: /app/runs
+    volumes:
+      - runs:/app/runs
+    depends_on:
+      - ollama
+
+volumes:
+  ollama:
+  runs:

@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="980" viewBox="0 0 1600 980" role="img" aria-labelledby="title desc">
+  <title id="title">Stale policy visual workflow demo</title>
+  <desc id="desc">Mock screenshot of the visual refund workflow stopping on stale policy state.</desc>
+  <defs>
+    <style>
+      text { font-family: Arial, Helvetica, sans-serif; }
+      .bg { fill: #f5f7fa; }
+      .panel { fill: #ffffff; stroke: #d8dee8; stroke-width: 2; }
+      .soft { fill: #eef2f7; }
+      .ink { fill: #171b23; }
+      .muted { fill: #626b7c; }
+      .accent { fill: #256f7b; }
+      .good { fill: #157347; }
+      .bad { fill: #b42318; }
+      .goodStroke { stroke: #157347; }
+      .badStroke { stroke: #b42318; }
+      .line { stroke: #d8dee8; stroke-width: 2; }
+      .title { font-size: 48px; font-weight: 800; }
+      .h2 { font-size: 28px; font-weight: 800; }
+      .label { font-size: 19px; font-weight: 700; }
+      .small { font-size: 16px; font-weight: 600; }
+      .tiny { font-size: 14px; font-weight: 600; }
+    </style>
+  </defs>
+  <rect class="bg" width="1600" height="980"/>
+  <text class="accent tiny" x="80" y="66">Agent Consistency</text>
+  <text class="ink title" x="80" y="122">Refund Consistency Lab</text>
+  <rect class="panel" x="1120" y="60" width="390" height="58" rx="8"/>
+  <text class="muted small" x="1140" y="96">sequential receipt-gated handoff pipeline</text>
+
+  <rect class="panel" x="80" y="160" width="1440" height="96" rx="8"/>
+  <text class="muted tiny" x="110" y="194">Scenario</text>
+  <rect class="soft" x="110" y="208" width="350" height="34" rx="8"/>
+  <text class="ink small" x="126" y="231">Stale policy</text>
+  <text class="muted tiny" x="500" y="194">Model provider</text>
+  <rect class="soft" x="500" y="208" width="350" height="34" rx="8"/>
+  <text class="ink small" x="516" y="231">ollama - qwen3:8b</text>
+  <rect x="1285" y="201" width="190" height="42" rx="8" fill="#256f7b"/>
+  <text fill="#ffffff" class="small" x="1330" y="228">Run workflow</text>
+
+  <rect class="panel badStroke" x="80" y="284" width="1440" height="86" rx="8"/>
+  <text class="bad label" x="110" y="326">FAILED</text>
+  <text class="muted small" x="210" y="326">demo-stale-policy - StaleStateError</text>
+  <text class="bad small" x="210" y="350">state 'refund_policy' is stale: read version policy-v12, current version policy-v14</text>
+
+  <rect class="panel" x="80" y="406" width="1000" height="420" rx="8"/>
+  <text class="ink h2" x="110" y="454">Agent timeline</text>
+
+  <g transform="translate(110 486)">
+    <rect class="panel goodStroke" width="220" height="260" rx="8"/>
+    <rect width="220" height="8" rx="4" fill="#157347"/>
+    <text class="ink label" x="18" y="46">01-intake</text>
+    <text class="muted small" x="18" y="74">intake-agent</text>
+    <rect class="soft" x="18" y="98" width="170" height="44" rx="8"/>
+    <text class="muted tiny" x="30" y="116">handoffs</text>
+    <text class="ink label" x="30" y="136">1</text>
+    <text class="good tiny" x="18" y="176">request_extraction</text>
+    <text class="good tiny" x="18" y="200">verified</text>
+  </g>
+  <g transform="translate(360 486)">
+    <rect class="panel badStroke" width="260" height="260" rx="8"/>
+    <rect width="260" height="8" rx="4" fill="#b42318"/>
+    <text class="ink label" x="18" y="46">02-policy</text>
+    <text class="muted small" x="18" y="74">policy-agent</text>
+    <rect class="soft" x="18" y="98" width="210" height="44" rx="8"/>
+    <text class="muted tiny" x="30" y="116">state reads</text>
+    <text class="ink label" x="30" y="136">1</text>
+    <text class="bad tiny" x="18" y="176">stale_state</text>
+    <text class="muted tiny" x="18" y="200">policy-v12 != policy-v14</text>
+  </g>
+  <g transform="translate(650 486)">
+    <rect class="panel" width="390" height="260" rx="8"/>
+    <text class="muted label" x="25" y="108">Risk, Refund, and Comms stay locked</text>
+    <text class="muted small" x="25" y="138">No payment side effect is allowed after drift.</text>
+  </g>
+
+  <rect class="panel" x="1110" y="406" width="410" height="420" rx="8"/>
+  <text class="ink h2" x="1140" y="454">Causal links</text>
+  <text class="ink label" x="1140" y="510">handoff</text>
+  <text class="muted small" x="1140" y="540">01-intake to 02-policy</text>
+  <line class="line" x1="1140" y1="572" x2="1490" y2="572"/>
+  <text class="ink label" x="1140" y="620">artifact</text>
+  <text class="muted small" x="1140" y="650">request_extraction to policy</text>
+  <line class="line" x1="1140" y1="682" x2="1490" y2="682"/>
+  <text class="bad label" x="1140" y="730">blocked</text>
+  <text class="muted small" x="1140" y="760">policy write and refund execution</text>
+
+  <rect class="panel" x="80" y="856" width="1440" height="70" rx="8"/>
+  <text class="ink label" x="110" y="899">Proof summary</text>
+  <text class="muted small" x="300" y="899">2 receipts, stale state detected, 0 refund side effects</text>
+</svg>

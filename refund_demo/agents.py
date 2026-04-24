@@ -35,11 +35,19 @@ class IntakeAgent:
             order_snapshot = step.read_state("order", order, version=order["version"])
             extraction = json.loads(
                 provider.complete(
-                    system="Extract a compact refund request JSON object.",
+                    system=(
+                        "Extract a compact refund request JSON object. "
+                        "Return JSON only with keys intent, reason, urgency, summary. "
+                        "The reason must be one of: damaged item, wrong item, not received."
+                    ),
                     user=json.dumps({"request": request, "order": order}, sort_keys=True),
                     json_mode=True,
                 )
             )
+            if "reason" not in extraction:
+                extraction["reason"] = _pick_allowed_reason(request["customer_message"])
+            elif extraction["reason"] not in case["policy"]["allowed_reasons"]:
+                extraction["reason"] = _pick_allowed_reason(request["customer_message"])
             extraction_artifact = step.proof_artifact(
                 "request_extraction",
                 extraction,
@@ -288,3 +296,12 @@ class CommsAgent:
                 details={"message_id": message["message_id"]},
             )
             return message
+
+
+def _pick_allowed_reason(text: str) -> str:
+    lower = text.lower()
+    if "wrong" in lower:
+        return "wrong item"
+    if "not received" in lower or "missing" in lower:
+        return "not received"
+    return "damaged item"

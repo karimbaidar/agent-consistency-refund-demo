@@ -35,17 +35,17 @@
 
   <rect class="bg" width="1600" height="980"/>
   <text class="title" x="80" y="74">Agent Consistency Refund Demo Architecture</text>
-  <text class="subtitle" x="80" y="108">A five-agent refund workflow with contracts, proof artifacts, verifier callbacks, causality, and visual reports.</text>
+  <text class="subtitle" x="80" y="108">A browser and CLI workflow with local LLM support, contracts, proof artifacts, verifier callbacks, causality, and visual reports.</text>
 
   <rect class="section" x="60" y="145" rx="18" ry="18" width="1480" height="490"/>
   <text class="label" x="95" y="188">Runtime Flow</text>
 
-  <rect class="data" x="690" y="172" rx="14" ry="14" width="220" height="58"/>
-  <text class="label" x="742" y="208">CLI runner</text>
+  <rect class="data" x="650" y="172" rx="14" ry="14" width="300" height="58"/>
+  <text class="label" x="704" y="208">Browser UI / CLI</text>
 
   <rect class="data" x="590" y="265" rx="14" ry="14" width="420" height="72"/>
-  <text class="label" x="676" y="294">Refund workflow</text>
-  <text class="muted" x="677" y="318">orchestrates agent steps</text>
+  <text class="label" x="640" y="294">FastAPI app + refund workflow</text>
+  <text class="muted" x="670" y="318">serves the UI and orchestrates agent steps</text>
 
   <path class="arrow" d="M800 230 L800 262"/>
 
@@ -97,7 +97,7 @@
 
   <rect class="core" x="160" y="535" rx="18" ry="18" width="1280" height="72"/>
   <text class="label" x="477" y="568">agent-consistency receipts</text>
-  <text class="muted" x="458" y="592">state snapshots, handoff contracts, proof artifacts, outcome checks, and causal links</text>
+  <text class="muted" x="510" y="592">state snapshots, contracts, artifacts, outcomes, and causal links</text>
 
   <path class="soft-arrow" d="M205 491 L205 532"/>
   <path class="soft-arrow" d="M477 491 L477 532"/>

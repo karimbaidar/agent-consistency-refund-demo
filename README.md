@@ -60,7 +60,8 @@ handoffs, and false success before those errors reach production.
 ## How This Demo Uses It
 
 This repo builds a five-agent refund workflow and wraps every important step
-with `agent-consistency`.
+with `agent-consistency`. It can run as a CLI proof or as a browser-based demo
+backed by a local Ollama model.
 
 The app uses the published PyPI package:
 
@@ -102,6 +103,22 @@ different:
 One giant agent could do all of this, but it would hide ownership boundaries.
 This demo keeps the boundaries visible and checks the handoff between them.
 
+## Orchestration Pattern
+
+**Pattern: sequential receipt-gated handoff pipeline.**
+
+The workflow deliberately uses a simple sequential orchestration pattern:
+
+```text
+Intake -> Policy -> Risk -> Refund -> Comms
+```
+
+Each agent can continue only after the previous agent produces a valid handoff
+packet. The handoff is checked against a contract, attached proof artifacts,
+state versions, verifier callbacks, and outcome checks. This keeps the demo easy
+to follow while still modeling a real production concern: every agent must prove
+it is operating on the right version of reality before the next agent acts.
+
 ## What This Repo Proves
 
 After running the demo, you should be able to see:
@@ -142,6 +159,8 @@ This demo exercises the newer consistency layer directly:
 
 ```mermaid
 sequenceDiagram
+    participant UI as Browser UI
+    participant API as FastAPI app
     participant Intake
     participant Policy
     participant Risk
@@ -149,6 +168,8 @@ sequenceDiagram
     participant Comms
     participant AC as agent-consistency
 
+    UI->>API: choose scenario and model provider
+    API->>Intake: start receipt-gated workflow
     Intake->>AC: read ticket/order and create request_extraction artifact
     Intake->>Policy: handoff under intake_to_policy contract
     Policy->>AC: consume handoff and verify policy snapshot is current
@@ -170,7 +191,7 @@ sequenceDiagram
 | Refund Agent | Issue payment side effect | Dynamic verifier, settled-refund outcome, and provider proof artifact |
 | Comms Agent | Notify customer | Contract consumption, supported-claim check, and email outcome |
 
-## Quickstart
+## Quickstart: CLI
 
 ```bash
 git clone https://github.com/karimbaidar/agent-consistency-refund-demo.git
@@ -202,6 +223,61 @@ Report: runs/demo-happy-refund/summary.json
 HTML report: runs/demo-happy-refund/report.html
 Receipt log: runs/demo-happy-refund/receipts.jsonl
 Customer message id: email_c1d35b34d91dd0dd
+```
+
+## Quickstart: Visual App
+
+Run the browser demo locally with the deterministic provider:
+
+```bash
+python -m pip install -r requirements-dev.txt
+MODEL_PROVIDER=heuristic python -m uvicorn refund_demo.web:app --reload
+```
+
+Open:
+
+```text
+http://localhost:8000
+```
+
+The app lets you choose a scenario, choose a provider, run the workflow, and see
+the agent timeline, handoff contracts, proof artifacts, verifier outcomes, and
+causal links on screen.
+
+## Docker: Local LLM Demo
+
+The Docker setup runs the app with Ollama and defaults to `qwen3:8b`, a strong
+free local model option.
+
+Start Ollama:
+
+```bash
+docker compose up -d ollama
+```
+
+Pull the model into the Docker volume:
+
+```bash
+docker compose run --rm model-pull
+```
+
+Start the visual app:
+
+```bash
+docker compose up --build app
+```
+
+Open:
+
+```text
+http://localhost:8000
+```
+
+To use a smaller model on limited hardware:
+
+```bash
+OLLAMA_MODEL=qwen3:4b docker compose run --rm model-pull
+OLLAMA_MODEL=qwen3:4b docker compose up --build app
 ```
 
 The generated proof files are:
@@ -390,7 +466,7 @@ Use Ollama:
 ```bash
 MODEL_PROVIDER=ollama \
 OLLAMA_BASE_URL=http://localhost:11434 \
-OLLAMA_MODEL=llama3.2 \
+OLLAMA_MODEL=qwen3:8b \
 python -m refund_demo.cli --input samples/inputs/happy_path.json
 ```
 
@@ -424,6 +500,8 @@ ruff check refund_demo tests
 The tests cover:
 
 - provider configuration
+- FastAPI app and browser-entry route
+- Docker/Ollama setup files
 - happy-path workflow
 - stale policy failure
 - missing handoff failure
@@ -452,7 +530,8 @@ Git.
 
 ## Extension Ideas
 
-- Add a tiny web UI that shows receipts per agent step
+- Add streaming step events so the UI updates while agents run
+- Add an optional n8n workflow that calls this app as a consistency-backed node
 - Add LangGraph or CrewAI wrappers around the same agents
 - Replace gateway simulators with Stripe, Adyen, Zendesk, or ServiceNow sandboxes
 - Store receipts in Postgres, Azure Table Storage, or Blob Storage

@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Refund Consistency Lab</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <main>
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">Agent Consistency</p>
+        <h1>Refund Consistency Lab</h1>
+      </div>
+      <div class="pattern" id="pattern">sequential receipt-gated handoff pipeline</div>
+    </header>
+
+    <section class="control-surface" aria-label="workflow controls">
+      <label>
+        Scenario
+        <select id="scenario"></select>
+      </label>
+      <label>
+        Model provider
+        <select id="provider">
+          <option value="heuristic">heuristic</option>
+          <option value="ollama">ollama</option>
+          <option value="openai-compatible">openai-compatible</option>
+        </select>
+      </label>
+      <button id="run-button" type="button">Run workflow</button>
+    </section>
+
+    <section class="status-band" id="status-band">
+      <strong>Ready</strong>
+      <span>Choose a scenario and run the workflow.</span>
+    </section>
+
+    <section class="summary-grid" aria-label="workflow result">
+      <div>
+        <h2>Agent timeline</h2>
+        <div class="timeline" id="timeline"></div>
+      </div>
+      <aside>
+        <h2>Causal links</h2>
+        <div class="causal-links" id="causal-links"></div>
+      </aside>
+    </section>
+
+    <section class="details-grid" aria-label="run details">
+      <div>
+        <h2>Proof</h2>
+        <div class="proof-list" id="proof-list"></div>
+      </div>
+      <div>
+        <h2>Output</h2>
+        <pre id="output-json">{}</pre>
+      </div>
+    </section>
+  </main>
+  <script src="/static/app.js"></script>
+</body>
+</html>

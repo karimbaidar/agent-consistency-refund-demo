@@ -1,1 +1,3 @@
 agent-consistency==0.2.0
+fastapi>=0.115,<0.129
+uvicorn>=0.30,<0.40

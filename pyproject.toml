@@ -4,18 +4,23 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "agent-consistency-refund-demo"
-version = "0.2.0"
+version = "0.3.0"
 description = "A multi-agent refund workflow demo for agent-consistency."
 requires-python = ">=3.9"
 authors = [
   { name = "Karim Baidar", email = "karimbaidar@yahoo.com" }
 ]
 dependencies = [
-  "agent-consistency==0.2.0"
+  "agent-consistency==0.2.0",
+  "fastapi>=0.115,<0.129",
+  "uvicorn>=0.30,<0.40"
 ]
 
 [tool.setuptools.packages.find]
 include = ["refund_demo*"]
+
+[tool.setuptools.package-data]
+refund_demo = ["static/*"]
 
 [tool.pytest.ini_options]
 addopts = "-ra"

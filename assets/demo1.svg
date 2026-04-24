@@ -1,0 +1,116 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="980" viewBox="0 0 1600 980" role="img" aria-labelledby="title desc">
+  <title id="title">Passing visual workflow demo</title>
+  <desc id="desc">Mock screenshot of the visual refund workflow passing with five receipt-backed agents.</desc>
+  <defs>
+    <style>
+      text { font-family: Arial, Helvetica, sans-serif; }
+      .bg { fill: #f5f7fa; }
+      .panel { fill: #ffffff; stroke: #d8dee8; stroke-width: 2; }
+      .soft { fill: #eef2f7; }
+      .ink { fill: #171b23; }
+      .muted { fill: #626b7c; }
+      .accent { fill: #256f7b; }
+      .good { fill: #157347; }
+      .goodStroke { stroke: #157347; }
+      .line { stroke: #d8dee8; stroke-width: 2; }
+      .title { font-size: 48px; font-weight: 800; }
+      .h2 { font-size: 28px; font-weight: 800; }
+      .label { font-size: 19px; font-weight: 700; }
+      .small { font-size: 16px; font-weight: 600; }
+      .tiny { font-size: 14px; font-weight: 600; }
+    </style>
+  </defs>
+  <rect class="bg" width="1600" height="980"/>
+  <text class="accent tiny" x="80" y="66">Agent Consistency</text>
+  <text class="ink title" x="80" y="122">Refund Consistency Lab</text>
+  <rect class="panel" x="1120" y="60" width="390" height="58" rx="8"/>
+  <text class="muted small" x="1140" y="96">sequential receipt-gated handoff pipeline</text>
+
+  <rect class="panel" x="80" y="160" width="1440" height="96" rx="8"/>
+  <text class="muted tiny" x="110" y="194">Scenario</text>
+  <rect class="soft" x="110" y="208" width="350" height="34" rx="8"/>
+  <text class="ink small" x="126" y="231">Happy refund</text>
+  <text class="muted tiny" x="500" y="194">Model provider</text>
+  <rect class="soft" x="500" y="208" width="350" height="34" rx="8"/>
+  <text class="ink small" x="516" y="231">ollama - qwen3:8b</text>
+  <rect x="1285" y="201" width="190" height="42" rx="8" fill="#256f7b"/>
+  <text fill="#ffffff" class="small" x="1330" y="228">Run workflow</text>
+
+  <rect class="panel goodStroke" x="80" y="284" width="1440" height="62" rx="8"/>
+  <text class="good label" x="110" y="323">PASSED</text>
+  <text class="muted small" x="210" y="323">demo-happy-refund - All gates passed.</text>
+
+  <rect class="panel" x="80" y="382" width="1000" height="420" rx="8"/>
+  <text class="ink h2" x="110" y="430">Agent timeline</text>
+
+  <g transform="translate(110 462)">
+    <rect class="panel goodStroke" width="170" height="260" rx="8"/>
+    <rect width="170" height="8" rx="4" fill="#157347"/>
+    <text class="ink label" x="18" y="46">01-intake</text>
+    <text class="muted small" x="18" y="74">intake-agent</text>
+    <rect class="soft" x="18" y="98" width="134" height="44" rx="8"/>
+    <text class="muted tiny" x="30" y="116">artifacts</text>
+    <text class="ink label" x="30" y="136">1</text>
+    <text class="good tiny" x="18" y="176">request_extraction</text>
+    <text class="good tiny" x="18" y="200">verified</text>
+  </g>
+  <g transform="translate(300 462)">
+    <rect class="panel goodStroke" width="170" height="260" rx="8"/>
+    <rect width="170" height="8" rx="4" fill="#157347"/>
+    <text class="ink label" x="18" y="46">02-policy</text>
+    <text class="muted small" x="18" y="74">policy-agent</text>
+    <rect class="soft" x="18" y="98" width="134" height="44" rx="8"/>
+    <text class="muted tiny" x="30" y="116">handoffs</text>
+    <text class="ink label" x="30" y="136">1</text>
+    <text class="good tiny" x="18" y="176">policy_decision</text>
+    <text class="good tiny" x="18" y="200">verified</text>
+  </g>
+  <g transform="translate(490 462)">
+    <rect class="panel goodStroke" width="170" height="260" rx="8"/>
+    <rect width="170" height="8" rx="4" fill="#157347"/>
+    <text class="ink label" x="18" y="46">03-risk</text>
+    <text class="muted small" x="18" y="74">risk-agent</text>
+    <rect class="soft" x="18" y="98" width="134" height="44" rx="8"/>
+    <text class="muted tiny" x="30" y="116">verifier</text>
+    <text class="ink label" x="30" y="136">pass</text>
+    <text class="good tiny" x="18" y="176">risk_decision</text>
+    <text class="good tiny" x="18" y="200">verified</text>
+  </g>
+  <g transform="translate(680 462)">
+    <rect class="panel goodStroke" width="170" height="260" rx="8"/>
+    <rect width="170" height="8" rx="4" fill="#157347"/>
+    <text class="ink label" x="18" y="46">04-refund</text>
+    <text class="muted small" x="18" y="74">refund-agent</text>
+    <rect class="soft" x="18" y="98" width="134" height="44" rx="8"/>
+    <text class="muted tiny" x="30" y="116">outcomes</text>
+    <text class="ink label" x="30" y="136">2</text>
+    <text class="good tiny" x="18" y="176">refund_settled</text>
+    <text class="good tiny" x="18" y="200">passed</text>
+  </g>
+  <g transform="translate(870 462)">
+    <rect class="panel goodStroke" width="170" height="260" rx="8"/>
+    <rect width="170" height="8" rx="4" fill="#157347"/>
+    <text class="ink label" x="18" y="46">05-comms</text>
+    <text class="muted small" x="18" y="74">comms-agent</text>
+    <rect class="soft" x="18" y="98" width="134" height="44" rx="8"/>
+    <text class="muted tiny" x="30" y="116">claims</text>
+    <text class="ink label" x="30" y="136">safe</text>
+    <text class="good tiny" x="18" y="176">email_sent</text>
+    <text class="good tiny" x="18" y="200">passed</text>
+  </g>
+
+  <rect class="panel" x="1110" y="382" width="410" height="420" rx="8"/>
+  <text class="ink h2" x="1140" y="430">Causal links</text>
+  <text class="ink label" x="1140" y="486">handoff</text>
+  <text class="muted small" x="1140" y="516">01-intake to 02-policy</text>
+  <line class="line" x1="1140" y1="548" x2="1490" y2="548"/>
+  <text class="ink label" x="1140" y="596">artifact</text>
+  <text class="muted small" x="1140" y="626">policy_decision to 03-risk</text>
+  <line class="line" x1="1140" y1="658" x2="1490" y2="658"/>
+  <text class="ink label" x="1140" y="706">outcome</text>
+  <text class="muted small" x="1140" y="736">refund_provider_status to comms</text>
+
+  <rect class="panel" x="80" y="832" width="1440" height="86" rx="8"/>
+  <text class="ink label" x="110" y="876">Proof summary</text>
+  <text class="muted small" x="300" y="876">5 receipts, 4 proof artifacts, 12 causal links, 0 unresolved failures</text>
+</svg>

@@ -59,7 +59,8 @@ class OpenAICompatibleProvider(ModelProvider):
             payload,
             headers={"Authorization": f"Bearer {self.api_key}"} if self.api_key else {},
         )
-        return response["choices"][0]["message"]["content"]
+        content = response["choices"][0]["message"]["content"]
+        return _extract_json_object(content) if json_mode else content
 
 
 @dataclass
@@ -80,7 +81,8 @@ class OllamaProvider(ModelProvider):
         if json_mode:
             payload["format"] = "json"
         response = _post_json(f"{self.base_url.rstrip('/')}/api/chat", payload, headers={})
-        return response["message"]["content"]
+        content = response["message"]["content"]
+        return _extract_json_object(content) if json_mode else _strip_thinking(content)
 
 
 def build_provider(config: AppConfig) -> ModelProvider:
@@ -111,6 +113,29 @@ def _post_json(url: str, payload: Dict[str, Any], *, headers: Dict[str, str]) ->
     except urllib.error.HTTPError as exc:
         message = exc.read().decode("utf-8", errors="replace")
         raise RuntimeError(f"model provider returned HTTP {exc.code}: {message}") from exc
+    except urllib.error.URLError as exc:
+        raise RuntimeError(f"model provider is unreachable at {url}: {exc.reason}") from exc
+
+
+def _strip_thinking(text: str) -> str:
+    if "</think>" in text:
+        return text.split("</think>", 1)[1].strip()
+    return text.strip()
+
+
+def _extract_json_object(text: str) -> str:
+    cleaned = _strip_thinking(text)
+    try:
+        parsed = json.loads(cleaned)
+    except json.JSONDecodeError as exc:
+        start = cleaned.find("{")
+        end = cleaned.rfind("}")
+        if start == -1 or end == -1 or end <= start:
+            raise ValueError(f"model did not return a JSON object: {cleaned[:200]}") from exc
+        parsed = json.loads(cleaned[start : end + 1])
+    if not isinstance(parsed, dict):
+        raise ValueError("model did not return a JSON object")
+    return json.dumps(parsed)
 
 
 def _pick_reason(text: str) -> str:
