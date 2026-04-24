@@ -2,4 +2,7 @@ Workflow result: PASSED
 Run id: demo-happy-refund
 Provider: heuristic
 Receipts: 5
+Report: runs/demo-happy-refund/summary.json
+HTML report: runs/demo-happy-refund/report.html
+Receipt log: runs/demo-happy-refund/receipts.jsonl
 Customer message id: email_...

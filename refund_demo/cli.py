@@ -33,6 +33,7 @@ def main() -> int:
     print(f"Provider: {provider.name}")
     print(f"Receipts: {len(result.receipts)}")
     print(f"Report: {Path(result.report_path)}")
+    print(f"HTML report: {Path(result.html_report_path)}")
     print(f"Receipt log: {Path(result.receipts_path)}")
     if result.failure:
         print(f"Failure: {result.failure['type']}: {result.failure['message']}")

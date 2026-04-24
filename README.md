@@ -47,9 +47,12 @@ The library records:
 
 - state snapshots read by each agent
 - assumptions made by each step
+- handoff contracts with required inputs and evidence
 - handoff packets passed between agents
+- proof artifacts produced by model calls, decisions, and provider reads
 - state deltas produced by decisions and side effects
 - outcome checks that prove the business result actually happened
+- causal links showing which receipt consumed which handoff or artifact
 
 This gives developers a lightweight way to catch stale state, incomplete
 handoffs, and false success before those errors reach production.
@@ -64,6 +67,9 @@ The app uses the published PyPI package:
 ```bash
 python -m pip install -r requirements.txt
 ```
+
+It is pinned to `agent-consistency==0.2.0`, which adds handoff contracts, proof
+artifacts, verifier callbacks, and a causality graph.
 
 For development and tests:
 
@@ -103,12 +109,30 @@ After running the demo, you should be able to see:
 - where each agent step starts and ends
 - what state version each agent read
 - what facts were handed to the next agent
+- which proof artifact justified a handoff
+- which verifier accepted or rejected a contract
+- how each downstream step links back to upstream receipts
 - why a stale policy is blocked before payment execution
 - why a missing handoff field cannot silently pass downstream
 - why a payment provider response is not accepted until the refund is settled
 
 The point is not only that the workflow runs. The point is that the workflow can
 explain why it was allowed to continue, or why it stopped.
+
+## Consistency Features Shown
+
+This demo exercises the newer consistency layer directly:
+
+- **Handoff contracts** declare required facts, required evidence, produced
+  artifacts, and optional verifier names.
+- **Proof artifacts** attach model output, policy decisions, risk decisions, and
+  refund provider status to receipts.
+- **Dynamic verifiers** run small app-owned checks such as "is this refund intent
+  allowed?" or "is this customer message backed by a settled refund?"
+- **Causality graph** links receipts through consumed handoffs and artifacts, so
+  the workflow is explainable after the run.
+- **HTML report** turns the receipts and causal links into a quick visual
+  inspection page.
 
 ## Architecture
 
@@ -125,26 +149,26 @@ sequenceDiagram
     participant Comms
     participant AC as agent-consistency
 
-    Intake->>AC: read support ticket and order snapshots
-    Intake->>Policy: handoff required facts and evidence
-    Policy->>AC: verify policy snapshot is current
-    Policy->>Risk: handoff eligibility decision
-    Risk->>AC: verify risk profile snapshot is current
-    Risk->>Refund: handoff approved refund intent
-    Refund->>AC: write refund state and verify settled outcome
-    Refund->>Comms: handoff refund evidence
-    Comms->>AC: verify supported customer claim and email sent
+    Intake->>AC: read ticket/order and create request_extraction artifact
+    Intake->>Policy: handoff under intake_to_policy contract
+    Policy->>AC: consume handoff and verify policy snapshot is current
+    Policy->>Risk: handoff policy_decision artifact
+    Risk->>AC: consume handoff and verify risk profile is current
+    Risk->>Refund: handoff risk_decision through verifier registry
+    Refund->>AC: verify refund_settled and create provider proof
+    Refund->>Comms: handoff settled refund evidence
+    Comms->>AC: verify supported claim and email outcome
 ```
 
 ## Agent Roles
 
 | Agent | Responsibility | Consistency check |
 | --- | --- | --- |
-| Intake Agent | Extract refund request and order facts | Required handoff facts and evidence |
-| Policy Agent | Decide policy eligibility | Stale policy detection |
-| Risk Agent | Check refund abuse risk | Stale risk profile detection |
-| Refund Agent | Issue payment side effect | Outcome verifier for settled refund |
-| Comms Agent | Notify customer | Supported-claim check and email outcome |
+| Intake Agent | Extract refund request and order facts | Required handoff facts, evidence, and request extraction artifact |
+| Policy Agent | Decide policy eligibility | Contract consumption, stale policy detection, and policy decision artifact |
+| Risk Agent | Check refund abuse risk | Contract consumption, stale risk detection, and risk decision artifact |
+| Refund Agent | Issue payment side effect | Dynamic verifier, settled-refund outcome, and provider proof artifact |
+| Comms Agent | Notify customer | Contract consumption, supported-claim check, and email outcome |
 
 ## Quickstart
 
@@ -163,7 +187,7 @@ python -m refund_demo.cli --input samples/inputs/happy_path.json
 ```
 
 `python -m pip show agent-consistency` should show the installed PyPI package,
-currently pinned to `0.1.1`.
+currently pinned to `0.2.0`.
 `python -m pip show agent-consistency-refund-demo` confirms the local demo app
 is installed in editable mode, which is also how CI imports `refund_demo`.
 
@@ -175,6 +199,7 @@ Run id: demo-happy-refund
 Provider: heuristic
 Receipts: 5
 Report: runs/demo-happy-refund/summary.json
+HTML report: runs/demo-happy-refund/report.html
 Receipt log: runs/demo-happy-refund/receipts.jsonl
 Customer message id: email_c1d35b34d91dd0dd
 ```
@@ -183,6 +208,7 @@ The generated proof files are:
 
 ```text
 runs/demo-happy-refund/summary.json
+runs/demo-happy-refund/report.html
 runs/demo-happy-refund/receipts.jsonl
 ```
 
@@ -195,9 +221,23 @@ python -m json.tool runs/demo-happy-refund/summary.json
 If you have `jq`:
 
 ```bash
-jq '.receipts[] | {step_id, agent, status, issues, outcomes}' \
+jq '.receipts[] | {step_id, agent, status, artifacts: .proof_artifacts, consumed_handoff_ids, outcomes}' \
   runs/demo-happy-refund/summary.json
 ```
+
+## Visual Report
+
+Each run writes a static HTML report beside the JSON summary. It shows a receipt
+timeline, consumed handoffs, proof artifact names, outcome checks, and the
+causal links between steps.
+
+```bash
+open runs/demo-happy-refund/report.html
+```
+
+The report is intentionally plain HTML, so it works without a dev server,
+database, or frontend build step. That keeps the proof easy to run while still
+making the value visible.
 
 ## Validation Matrix
 
@@ -239,6 +279,7 @@ Run id: demo-stale-policy
 Provider: heuristic
 Receipts: 2
 Report: runs/demo-stale-policy/summary.json
+HTML report: runs/demo-stale-policy/report.html
 Receipt log: runs/demo-stale-policy/receipts.jsonl
 Failure: StaleStateError: state 'refund_policy' is stale: read version policy-v12, current version policy-v14
 ```
@@ -257,6 +298,7 @@ Run id: demo-missing-handoff
 Provider: heuristic
 Receipts: 1
 Report: runs/demo-missing-handoff/summary.json
+HTML report: runs/demo-missing-handoff/report.html
 Receipt log: runs/demo-missing-handoff/receipts.jsonl
 Failure: HandoffValidationError: required fact 'order.previous_refund_count' is missing
 ```
@@ -275,6 +317,7 @@ Run id: demo-pending-refund
 Provider: heuristic
 Receipts: 4
 Report: runs/demo-pending-refund/summary.json
+HTML report: runs/demo-pending-refund/report.html
 Receipt log: runs/demo-pending-refund/receipts.jsonl
 Failure: OutcomeVerificationError: outcome 'refund_settled' failed: refund status is pending, not settled
 ```
@@ -283,9 +326,13 @@ Each scenario writes its own report:
 
 ```text
 runs/demo-happy-refund/summary.json
+runs/demo-happy-refund/report.html
 runs/demo-stale-policy/summary.json
+runs/demo-stale-policy/report.html
 runs/demo-missing-handoff/summary.json
+runs/demo-missing-handoff/report.html
 runs/demo-pending-refund/summary.json
+runs/demo-pending-refund/report.html
 ```
 
 ## Did This Use A Model?
@@ -369,6 +416,7 @@ The tests cover:
 - missing handoff failure
 - pending refund false-success failure
 - CLI smoke tests
+- causality graph and HTML report generation
 
 ## Sample Inputs And Outputs
 

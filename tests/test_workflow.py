@@ -21,6 +21,7 @@ def test_happy_path_produces_five_passing_receipts(tmp_path):
     assert len(result.receipts) == 5
     assert [receipt["status"] for receipt in result.receipts] == ["passed"] * 5
     assert result.final_message["status"] == "sent"
+    assert result.html_report_path.exists()
 
 
 def test_stale_policy_fails_with_stale_state_issue(tmp_path):
@@ -57,7 +58,10 @@ def test_pending_refund_catches_false_success(tmp_path):
     assert result.failure["type"] == "OutcomeVerificationError"
     refund_receipt = result.receipts[-1]
     assert refund_receipt["step_id"] == "04-refund"
-    assert refund_receipt["outcomes"][0]["passed"] is False
+    refund_outcome = next(
+        outcome for outcome in refund_receipt["outcomes"] if outcome["name"] == "refund_settled"
+    )
+    assert refund_outcome["passed"] is False
 
 
 def test_report_file_contains_receipts(tmp_path):
@@ -69,3 +73,7 @@ def test_report_file_contains_receipts(tmp_path):
     assert report["status"] == "passed"
     assert report["receipt_count"] == 5
     assert report["receipts"][0]["agent"] == "intake-agent"
+    assert report["receipts"][0]["proof_artifacts"][0]["name"] == "request_extraction"
+    assert report["receipts"][1]["consumed_handoff_ids"]
+    assert report["causality_graph"]["edges"]
+    assert "Receipt Timeline" in result.html_report_path.read_text(encoding="utf-8")

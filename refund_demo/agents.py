@@ -1,8 +1,9 @@
 import json
 from typing import Any, Dict
 
-from agent_consistency import HandoffPacket, WorkflowRun
+from agent_consistency import HandoffPacket, VerifierRegistry, WorkflowRun
 
+from .contracts import INTAKE_TO_POLICY, POLICY_TO_RISK, REFUND_TO_COMMS, RISK_TO_REFUND
 from .providers import ModelProvider
 from .services import EmailGateway, RefundGateway
 
@@ -39,6 +40,13 @@ class IntakeAgent:
                     json_mode=True,
                 )
             )
+            extraction_artifact = step.proof_artifact(
+                "request_extraction",
+                extraction,
+                kind="model_output",
+                verified=True,
+                verifier="json_parse",
+            )
 
             order_facts = {
                 "id": order["id"],
@@ -68,16 +76,8 @@ class IntakeAgent:
                     "order.previous_refund_count": order_snapshot.to_dict(),
                 },
                 constraints=["do not refund when previous_refund_count exceeds policy"],
-                required_facts=[
-                    "ticket_id",
-                    "request.order_id",
-                    "request.amount",
-                    "request.reason",
-                    "order.id",
-                    "order.customer_id",
-                    "order.previous_refund_count",
-                ],
-                required_evidence=["order.previous_refund_count"],
+                artifacts=[extraction_artifact],
+                contract=INTAKE_TO_POLICY,
             )
 
 
@@ -93,6 +93,7 @@ class PolicyAgent:
             step_id="02-policy",
             assumptions=["policy version must be current before approving a refund"],
         ) as step:
+            step.consume_handoff(packet, contract=INTAKE_TO_POLICY)
             policy_snapshot = step.read_state("refund_policy", policy, version=policy["version"])
             step.ensure_fresh(policy_snapshot, current_version=case["latest_policy_version"])
 
@@ -112,6 +113,13 @@ class PolicyAgent:
                 "policy_version": policy["version"],
             }
             step.write_state("policy_decision", decision, based_on=policy_snapshot)
+            decision_artifact = step.proof_artifact(
+                "policy_decision",
+                decision,
+                kind="decision",
+                verified=decision["eligible"],
+                verifier="policy_rules",
+            )
 
             return step.handoff(
                 to_agent="risk-agent",
@@ -122,8 +130,8 @@ class PolicyAgent:
                     "decision": decision,
                 },
                 evidence={"policy": policy_snapshot.to_dict()},
-                required_facts=["request.order_id", "order.customer_id", "decision.eligible"],
-                required_evidence=["policy"],
+                artifacts=[decision_artifact],
+                contract=POLICY_TO_RISK,
             )
 
 
@@ -139,6 +147,7 @@ class RiskAgent:
             step_id="03-risk",
             assumptions=["risk profile version must be current before payment action"],
         ) as step:
+            step.consume_handoff(packet, contract=POLICY_TO_RISK)
             risk_snapshot = step.read_state("risk_profile", risk, version=risk["version"])
             step.ensure_fresh(
                 risk_snapshot,
@@ -155,6 +164,13 @@ class RiskAgent:
                 "reason": "risk checks passed" if risk_approved else "manual review required",
             }
             step.write_state("risk_decision", risk_result, based_on=risk_snapshot)
+            risk_artifact = step.proof_artifact(
+                "risk_decision",
+                risk_result,
+                kind="decision",
+                verified=risk_result["approved"],
+                verifier="risk_rules",
+            )
 
             return step.handoff(
                 to_agent="refund-agent",
@@ -165,13 +181,8 @@ class RiskAgent:
                 },
                 evidence={"risk_profile": risk_snapshot.to_dict(), **packet.evidence},
                 constraints=["use a deterministic refund intent key"],
-                required_facts=[
-                    "request.order_id",
-                    "request.amount",
-                    "order.currency",
-                    "decision.eligible",
-                    "risk.approved",
-                ],
+                artifacts=[risk_artifact],
+                contract=RISK_TO_REFUND,
             )
 
 
@@ -181,13 +192,19 @@ class RefundAgent:
     def __init__(self, gateway: RefundGateway) -> None:
         self.gateway = gateway
 
-    def run(self, run: WorkflowRun, packet: HandoffPacket) -> HandoffPacket:
+    def run(
+        self,
+        run: WorkflowRun,
+        packet: HandoffPacket,
+        registry: VerifierRegistry,
+    ) -> HandoffPacket:
         with run.step(
             self.name,
             "issue_refund",
             step_id="04-refund",
             assumptions=["payment provider status is authoritative for refund completion"],
         ) as step:
+            step.consume_handoff(packet, contract=RISK_TO_REFUND, registry=registry)
             decision = packet.facts["decision"]
             risk = packet.facts["risk"]
             if not decision["eligible"] or not risk["approved"]:
@@ -208,6 +225,14 @@ class RefundAgent:
                 failure_reason=f"refund status is {refund['status']}, not settled",
                 details=refund,
             )
+            refund_artifact = step.proof_artifact(
+                "refund_provider_status",
+                refund,
+                kind="api_read",
+                verified=refund["status"] == "settled",
+                verifier="refund_settled",
+                uri=f"provider://refunds/{refund['refund_id']}",
+            )
 
             return step.handoff(
                 to_agent="comms-agent",
@@ -218,8 +243,8 @@ class RefundAgent:
                     "refund": refund,
                 },
                 evidence={"refund.status": refund, **packet.evidence},
-                required_facts=["customer_id", "order_id", "refund.refund_id", "refund.status"],
-                required_evidence=["refund.status"],
+                artifacts=[refund_artifact],
+                contract=REFUND_TO_COMMS,
             )
 
 
@@ -234,6 +259,7 @@ class CommsAgent:
         run: WorkflowRun,
         provider: ModelProvider,
         packet: HandoffPacket,
+        registry: VerifierRegistry,
     ) -> Dict[str, Any]:
         with run.step(
             self.name,
@@ -241,6 +267,7 @@ class CommsAgent:
             step_id="05-comms",
             assumptions=["customer message must not claim more than refund evidence supports"],
         ) as step:
+            step.consume_handoff(packet, contract=REFUND_TO_COMMS, registry=registry)
             step.require_supported_claims(
                 packet,
                 {"refund_complete": True},

@@ -2,4 +2,7 @@ Workflow result: FAILED
 Run id: demo-stale-policy
 Provider: heuristic
 Receipts: 2
+Report: runs/demo-stale-policy/summary.json
+HTML report: runs/demo-stale-policy/report.html
+Receipt log: runs/demo-stale-policy/receipts.jsonl
 Failure: StaleStateError: state 'refund_policy' is stale: read version policy-v12, current version policy-v14

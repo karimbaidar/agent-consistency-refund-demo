@@ -1,1 +1,1 @@
-agent-consistency==0.1.1
+agent-consistency==0.2.0

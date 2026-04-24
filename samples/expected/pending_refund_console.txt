@@ -3,5 +3,6 @@ Run id: demo-pending-refund
 Provider: heuristic
 Receipts: 4
 Report: runs/demo-pending-refund/summary.json
+HTML report: runs/demo-pending-refund/report.html
 Receipt log: runs/demo-pending-refund/receipts.jsonl
 Failure: OutcomeVerificationError: outcome 'refund_settled' failed: refund status is pending, not settled
