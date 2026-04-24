@@ -1,7 +1,35 @@
 # Agent Consistency Refund Demo
 
-A compact proof project showing how `agent-consistency` catches stale-state,
-broken-handoff, and false-success bugs in a real multi-agent refund workflow.
+A simple demo showing how to make multi-agent workflows more reliable.
+
+This project uses a realistic refund workflow to show a common problem in agent
+systems: every agent may complete its own task successfully, but the full
+workflow can still produce the wrong business outcome.
+
+For example:
+
+- one agent may use an old policy
+- another may miss important customer history
+- a payment step may return `pending`
+- the final message may still tell the customer the refund is complete
+
+These are failures that look correct in logs and dashboards, but are wrong in
+reality.
+
+`agent-consistency` adds lightweight receipts to each step of the workflow. These
+receipts show what state each agent used, what it passed forward, what evidence
+supported decisions, and whether the final outcome actually became true.
+
+In this demo, a five-agent refund pipeline proves that:
+
+- agents use the correct version of the data
+- handoffs include the required context
+- payment results are verified before the customer is notified
+- failures stop the workflow before money or messaging goes wrong
+
+The goal is simple: help teams build agent workflows that can explain what
+happened, why the workflow continued or stopped, and whether the final result was
+actually true.
 
 ## Domain Context
 
@@ -246,25 +274,27 @@ causal links on screen.
 
 ## Docker: Local LLM Demo
 
-The Docker setup runs the app with Ollama and defaults to `qwen3:8b`, a strong
-free local model option.
+The Docker setup runs the app with Ollama. For best compatibility, start with
+`qwen2.5:1.5b`, which is smaller, faster, and works better on typical Docker
+Desktop memory settings.
 
 Start Ollama:
 
 ```bash
+docker compose down
 docker compose up -d ollama
 ```
 
-Pull the model into the Docker volume:
+Pull the recommended model into the Docker volume:
 
 ```bash
-docker compose run --rm model-pull
+OLLAMA_MODEL=qwen2.5:1.5b docker compose run --rm model-pull
 ```
 
-Start the visual app:
+Start the visual app with Ollama:
 
 ```bash
-docker compose up --build app
+OLLAMA_MODEL=qwen2.5:1.5b MODEL_PROVIDER=ollama docker compose up --build app
 ```
 
 Open:
@@ -273,11 +303,42 @@ Open:
 http://localhost:8000
 ```
 
-To use a smaller model on limited hardware:
+If the app starts successfully, the browser demo will use the local Ollama model.
+
+To try a stronger model, use `qwen3:4b`:
 
 ```bash
+docker compose down
+docker compose up -d ollama
 OLLAMA_MODEL=qwen3:4b docker compose run --rm model-pull
-OLLAMA_MODEL=qwen3:4b docker compose up --build app
+OLLAMA_MODEL=qwen3:4b MODEL_PROVIDER=ollama docker compose up --build app
+```
+
+If you see an error such as:
+
+```text
+model requires more system memory
+```
+
+or:
+
+```text
+TimeoutError
+```
+
+increase Docker Desktop memory to at least 8 GB:
+
+```text
+Docker Desktop -> Settings -> Resources -> Memory -> 8 GB -> Apply & Restart
+```
+
+Then rerun the same `qwen3:4b` commands.
+
+To use a larger model on stronger hardware, run:
+
+```bash
+OLLAMA_MODEL=qwen3:8b docker compose run --rm model-pull
+OLLAMA_MODEL=qwen3:8b MODEL_PROVIDER=ollama docker compose up --build app
 ```
 
 The generated proof files are:
@@ -466,7 +527,7 @@ Use Ollama:
 ```bash
 MODEL_PROVIDER=ollama \
 OLLAMA_BASE_URL=http://localhost:11434 \
-OLLAMA_MODEL=qwen3:8b \
+OLLAMA_MODEL=qwen2.5:1.5b \
 python -m refund_demo.cli --input samples/inputs/happy_path.json
 ```
 
